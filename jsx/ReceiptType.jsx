@@ -7,9 +7,21 @@ class ReceiptType extends React.Component {
             receiptOptions: ["byMail"],
         }
     }
+    checkIsReady = () => {
+        let result = false;
+        if (this.state.receiptType == 2) {
+            result = true
+        } else if (this.state.receiptType == 3 && this.state.taxId != '') {
+            result = true;
+        }
+        return result;
+    }
     handler = (e) => {
         const {name, value} = e.target;
-        this.setState({[name]: value});
+        this.setState({[name]: value}, () => {
+            let result = this.checkIsReady();
+            this.props.updateIsReceiptTypeReady(result);
+        });
     }
     removeValueFromArray = (array, value) => {
         return array.filter((element) => {
