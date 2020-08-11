@@ -9,12 +9,28 @@ class ReceiptType extends React.Component {
     }
     handler = (e) => {
         const {name, value} = e.target;
-        this.setState({[name]: value}, () => {
-            
-        })
+        this.setState({[name]: value});
     }
-    arrayHandler = (e) => {
+    removeValueFromArray = (array, value) => {
+        return array.filter((element) => {
+            return element != value;
+        });
+    }
+    checkBoxHandler = (e) => {
+        const newValue = e.target.value;
+        const name = e.target.getAttribute("attributeName");
+        let values = this.state[name];
+        if (values.includes(newValue)) {
+            values = this.removeValueFromArray(values, newValue);
+        } else {
+            values.push(newValue);
+        }
 
+        if (name == "receiptOptions" && !values.includes("byMail")) {
+            values = [];
+        }
+
+        this.setState({[name]: values}); 
     }
     render = () => {
         return(
@@ -25,7 +41,7 @@ class ReceiptType extends React.Component {
                         type="radio" 
                         name="receiptType" 
                         value="2" 
-                        checked={this.state.receiptType === 2}
+                        checked={this.state.receiptType == 2}
                         onChange={this.handler}
                     />
                     個人
@@ -35,12 +51,17 @@ class ReceiptType extends React.Component {
                         type="radio" 
                         name="receiptType" 
                         value="3" 
-                        checked={this.state.receiptType === 3}
+                        checked={this.state.receiptType == 3}
                         onChange={this.handler}
                     />
                     公司
                     統一編號
-                    <input type="text" name="taxId" value={this.state.taxId}/>
+                    <input 
+                        type="text" 
+                        name="taxId"
+                        value={this.state.taxId}
+                        onChange={this.handler}
+                    />
                 </label>
                 <br />
                 <br />
@@ -51,7 +72,9 @@ class ReceiptType extends React.Component {
                             type="checkbox" 
                             name="receiptOptions[]" 
                             value="byMail" 
-                            checked={ this.state.receiptOptions.includes("byMail")} 
+                            attributeName="receiptOptions"
+                            checked={this.state.receiptOptions.includes("byMail")}
+                            onChange={this.checkBoxHandler}
                         />
                         實體寄送(+ $30)
                     </label>
@@ -60,8 +83,13 @@ class ReceiptType extends React.Component {
                         <input 
                         type="checkbox" 
                         name="receiptOptions[]"  
-                        value="promptRegistered" 
-                        checked={ this.state.receiptOptions.includes("promptRegistered")}
+                        value="promptRegistered"
+                        attributeName="receiptOptions"
+                        checked={this.state.receiptOptions.includes("promptRegistered")}
+                        disabled={
+                            !this.state.receiptOptions.includes("byMail")
+                        }
+                        onChange={this.checkBoxHandler}
                     />
                         限時掛號(再 + $30 = 60)
                     </label>
